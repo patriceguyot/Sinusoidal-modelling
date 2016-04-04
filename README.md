@@ -10,20 +10,20 @@ It can output:
 This code shows a version of a tool in development. Further improvements could be added in the future, in terms of computational cost, precision of the results, and documentation. 
 
  
-Remark: Some synthesized audio files have been computed (in the "Synth_audio_from_pkl" folder) from the outputted plk files, and an adaptation of the [sms-tools](https://github.com/MTG/sms-tools) (that is not available in this repository). 
+Remark: some synthesized audio files have been computed (in the "Synth_audio_from_pkl" folder) from the outputted plk files, and an adaptation of the [sms-tools](https://github.com/MTG/sms-tools) (that is not available in this repository). 
 
 
 ## Prerequisites
 
 This code is based on python (tested with python 2.7.8).
 
-Some python package required:
+Some python package are required:
 
  * [Numpy](http://www.numpy.org/)
  * [Scipy](http://www.scipy.org/)
- * [Matlplotlib](http://matplotlib.org/) (for graphing)
- * os
+ * [Matlplotlib](http://matplotlib.org/) (for graphic)
  * csv, pickle (to write output files)
+ * os
  
 ## Usage
 
@@ -34,7 +34,7 @@ $python main.py
 
 All Rights Reserved.
 
-## Author
+## Authors
 
 Patrice Guyot
 
