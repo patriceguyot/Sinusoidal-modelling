@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-    Compute sine modelling
+    Compute sinusoidal modelling in the context of eco-acoustic.
+
 """
 
 __author__ = "Patrice Guyot"
@@ -97,7 +98,7 @@ def get_spectrogram(samples, sr, max_freq=None):
 #--------------------------------------------------------------------------------------------
 def mean_spectro(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_freq=None, n_bins=1024, windowing_function='hamming'):
     """
-    This function output the mean of the spectrogram as computed in the "get_trackings" function.
+    This function output the mean of the spectrogram (as computed in the "get_trackings" function)
 
     :param samples: samples of the audio signal
     :param sr: sampling rate
@@ -145,12 +146,9 @@ def mean_spectro(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_f
 
 
 #----------------------------------------------------------------------------
-#                           Partial tracking functions
+#                           Partial tracking class and functions
 #----------------------------------------------------------------------------
 class Node(object):
-
-    tani_cf=100.0
-    tani_cp=3.0
 
     def __init__(self, frequency, amplitude, time):
 
@@ -196,66 +194,22 @@ class Tracking(object):
     def __repr__(self):
         return "Tracking %d" % self.id
 
-    def get_centroid(self):
-        return np.mean([n.frequency for n in self.nodes])
-
     def get_node_at(self, time):
 
         for n in self.nodes :
             if n.time == time :
                 return n
-
         return None
 
     def add_node(self, node, tani_th=1):
-
         if self.last_node.tani_dist(node) < tani_th:
-
             self.nodes.add(node)
             self.stop = node.time
             self.last_node = node
 
             return True
-
         else:
-
             return False
-
-    def intersect(self, other):
-        """
-        Return the list of tuples corresponding to the intersection (highter node , lower node)
-        """
-        if other.get_centroid():
-            return [(o, m) for m in self.nodes for o in other.nodes if o.time == m.time]
-        else:
-            return [(m, o) for m in self.nodes for o in other.nodes if o.time == m.time]
-
-    def harmo_link(self, others, min_overlap_frames=3, var_max=0.008):
-
-        linkables = []
-        for other in others:
-
-            if other is not self:
-
-                simul_nodes = self.intersect(other)
-
-                if len(simul_nodes) > min_overlap_frames:
-                    """
-                    ratios = [a.frequency/b.frequency if a.frequency > b.frequency else b.frequency/a.frequency
-                              for a, b in simul_nodes ]
-
-                    magnitude = round(mean(ratios))
-
-                    if magnitude > 1 and std([abs(r-magnitude) for r in ratios]) < var_max:
-                        linkables += [other]
-                    """
-                    linkables += [other]
-
-        return linkables
-
-    def get_portion(self, start, stop):
-
-        return [n.frequency for n in sorted(self.nodes, key=lambda x:x.time) if start <= n.time <= stop]
 
 
 
@@ -316,40 +270,29 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
         spectrum_dB = 20*np.log10(spectrum) # Pat
         spectrogram += [spectrum]
 
-
+        # Find greatest peaks
         peaks = sorted([Node(frequency_line[low_freq_id+i], spectrum[i], time)
                         for i in range(1, len(spectrum)-1) if (spectrum[i-1] < spectrum[i] > spectrum[i+1]) & (spectrum_dB[i] > threshold_dB)],
                        key=lambda x: x.amplitude, reverse=True)[:n_peaks]
 
+        # Add peaks in tracks, or create news tracks
         for a in active_trackings:
-
             continue_loop = True
-
             i = 0
-
             while i < len(peaks) and continue_loop:
 
                 if a.add_node(peaks[i]):
-
                     peaks.remove(peaks[i])
-
                     continue_loop = False
-
                 else:
-
                     i += 1
 
             if continue_loop:
-
                 if len(a.nodes) <= min_len:
-
                     trackings.remove(a)
-
                 else:
-
                     a.active = False
 
-        # Start tracking
         trackings += [Tracking(p) for p in peaks]
 
     return trackings
@@ -360,8 +303,6 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
 #                           Stats from tracking function
 #----------------------------------------------------------------------------
 def stats_peak(trackings, time_begin, time_end, frequency_low, frequency_high, nb_f_quadrat = 10, nb_t_quadrat=10):
-
-
 
     """
 
@@ -375,15 +316,10 @@ def stats_peak(trackings, time_begin, time_end, frequency_low, frequency_high, n
     :param nb_f_quadrat: number of frequency quadrat to consider
     :param nb_t_quadrat: number of time quadrat to consider
 
-
-
-
     :return ratio_quadrat_with_peaks: number of quadrat with peaks /  number of quadrat without peaks
     :return ci: Concentration Index
     :return len(peaks_centered): number of peaks in tracks
     """
-
-
 
     peaks = [list(t.nodes) for t in trackings]
     peaks2 = [item for sublist in peaks for item in sublist] #flatten the list of list to list
@@ -400,9 +336,7 @@ def stats_peak(trackings, time_begin, time_end, frequency_low, frequency_high, n
 
     values = sorted([[number_peaks, [b for [_,b] in quadrat_distribution].count(number_peaks)] for number_peaks in set([b for [_,b] in quadrat_distribution])]) # -> [[nb_values, nb_quadrats]...]
 
-
     ci = (np.sum( [K*(n - D)**2 for [n,K] in values]) / (float(len(quadrats_values)-1))/D)
-
     ratio_quadrat_with_peaks = len([b for [_,b] in quadrat_distribution if b>0])/float(len(quadrat_distribution))
 
     return ratio_quadrat_with_peaks, ci, len(peaks_centered)
@@ -430,13 +364,10 @@ if __name__ == '__main__':
     output['filename']= path.basename(file_path)
 
 
-
-
     # Reading of the audio file
     print 'Read the audio file:', file_path
     sr, sig = wavread(file_path)
     samples = pcm2float(sig,dtype='float64')
-
 
 
 
@@ -516,12 +447,10 @@ if __name__ == '__main__':
     time_line_samples = range(int(w_length*sr), len(samples), int(w_step*sr))
     overlaps = np.zeros(time_line_samples[-1])
 
-
-
     removed_partials = 0
     if partials_number > 0:
-         starts = [t.start for t in trackings] #pat
-         stops = [t.stop for t in trackings] #pat
+         starts = [t.start for t in trackings]
+         stops = [t.stop for t in trackings]
          for start, stop in zip(starts,stops):
              overlaps[start*sr:stop*sr] += 1
              if np.all(overlaps[start*sr:stop*sr]>1):
@@ -531,15 +460,15 @@ if __name__ == '__main__':
                  overlaps[start*sr:stop*sr] -= 1
 
     print "Removed tracks:", removed_partials
-    partials_number_removed = len(trackings)
-    print "Number of tracks (after removing):", partials_number_removed
+    nb_tracks_removed = len(trackings)
+    print "Number of tracks (after removing):", nb_tracks_removed
 
 
     # Output a csv file -------------------------------------
-    output['partials_number']= partials_number_removed
+    output['tracks_number']= nb_tracks_removed
     output['ratio_quadrat'] = ratio_quadrat_with_peaks
     output['CI'] = ci
-    output['nb_peaks'] = nb_peaks
+    output['peaks_number'] = nb_peaks
 
     # Write the csv file
     print '- Write Indices in:', output_csv_file
