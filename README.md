@@ -3,9 +3,9 @@
 This python code intend to illustrate the submission of a scientific paper. It uses a sinusoidal modelling algorithm to compute some audio indices in the context of Ecoacoustic.
 
 It can output:
- * a csv files containing the indices
- * a pickle file containing the values of all the tracks
- * a plot of the sinusoidal modelling
+ * a csv files containing the indices,
+ * a pickle file containing the values of all the tracks,
+ * a plot of the sinusoidal modelling.
 
 This code shows a version of a tool in development. Further improvements could be added in the future, in terms of computational cost, precision of the results, and documentation. 
 
