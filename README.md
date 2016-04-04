@@ -10,7 +10,7 @@ It can output:
 This code shows a version of a tool in development. Further improvements could be added in the future, in terms of computational cost, precision of the results, and documentation. 
 
  
-Remark: some synthesized audio files have been computed (in the "Synth_audio_from_pkl" folder) from the outputted plk files, and an adaptation of the [sms-tools](https://github.com/MTG/sms-tools) (that is not available in this repository). 
+Remark: some synthesized audio files have been computed (in the "Synth_audio_from_pkl" folder) from the outputted plk files, using an adaptation of the [sms-tools](https://github.com/MTG/sms-tools) for the synthesis (that is not currently available in this repository). 
 
 
 ## Prerequisites
@@ -37,10 +37,8 @@ All Rights Reserved.
 ## Authors
 
 Patrice Guyot
-
-(Adapted from:
-    * M. Le Coz, J. Pinquier, and R. André́-Obrecht, “Superposed speech localisation using frequency tracking,” in INTERSPEECH 2013 – 13th Annual Conference of the International Speech Communication Association, August 25-29, Lyon, France, Proceedings, 2013.)
+(code adapted from: M. Le Coz, J. Pinquier, and R. André-Obrecht, “Superposed speech localisation using frequency tracking,” in INTERSPEECH 2013 – 13th Annual Conference of the International Speech Communication Association, August 25-29, Lyon, France, Proceedings, 2013.)
     
-Questions, comments and remarks by emails will be appreciated.   
+Questions, comments and remarks (by emails) would be appreciated.   
     
 Credits: Patrice Guyot, Alice Eldridge, Mika Peck
