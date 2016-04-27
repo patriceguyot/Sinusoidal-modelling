@@ -32,7 +32,8 @@ $python main.py
 
 ## Licence
 
-All Rights Reserved.
+[GPL v3] (Sinusoidal-modelling-for-Ecoacoustics/LICENSE.txt)
+
 
 ## Authors
 
