@@ -1,6 +1,7 @@
 # Sinusoidal-modelling-for-Ecoacoustics
 
-This python code intend to illustrate a scientific paper: "Guyot, P., Eldridge, A., Eyre-Walker, Y. C., Johnston, A., Pellegrini, T., & Peck, M. (2016, September). Sinusoidal modelling for ecoacoustics. In Annual conference Interspeech (INTERSPEECH 2016) (pp. pp-2602) ([link](https://hal.archives-ouvertes.fr/hal-01474894/document)".
+This python code intend to illustrate a scientific paper: 
+Guyot, P., Eldridge, A., Eyre-Walker, Y. C., Johnston, A., Pellegrini, T., & Peck, M. *Sinusoidal modelling for ecoacoustics*. In Annual conference Interspeech (INTERSPEECH 2016, pp-2602-2606) ([link](https://hal.archives-ouvertes.fr/hal-01474894/document))
 
  It uses a sinusoidal modelling algorithm to compute some audio indices in the context of Ecoacoustic.
 
