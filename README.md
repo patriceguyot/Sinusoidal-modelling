@@ -31,13 +31,11 @@ Some python package are required:
  
 ## Usage
 
-$python main.py
 
 
 ## Licence
 
-[GPL v3] (Sinusoidal-modelling-for-Ecoacoustics/LICENSE.txt)
-
+GPL V 3 - see [LICENSE.txt](https://github.com/patriceguyot/Sinusoidal-modelling-for-Ecoacoustics/blob/master/LICENSE.txt) for more info
 
 ## Authors
 
