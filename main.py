@@ -2,7 +2,6 @@
 
 """
     Compute sinusoidal modelling in the context of eco-acoustic.
-
 """
 
 __author__ = "Patrice Guyot"
@@ -21,31 +20,25 @@ import csv
 from os import path
 import pickle
 
-
-
 #----------------------------------------------------------------------------
 #                           Signal function
 #----------------------------------------------------------------------------
 def pcm2float(samples, dtype='float64'):
     """Convert PCM signal to floating point with a range from -1 to 1.
-
     Use dtype='float32' for single precision.
-
     Parameters
     ----------
     samples : array_like
         Input array, must have integral type.
     dtype : data type, optional
         Desired (floating point) data type.
-
     Returns
     -------
     numpy.ndarray
         Normalized floating point data.
-
-
     """
     sig = np.asarray(samples)
+    print(sig)
     if sig.dtype.kind not in 'iu':
         raise TypeError("'sig' must be an array of integers")
     dtype = np.dtype(dtype)
@@ -59,17 +52,16 @@ def pcm2float(samples, dtype='float64'):
 
 
 
+
+
 #----------------------------------------------------------------------------
 #                           Spectrogram functions
 #----------------------------------------------------------------------------
 def get_spectrogram(samples, sr, max_freq=None):
     """
-
     This function output the spectrogram of the signal. Used for plot only.
-
     :param samples: samples of the audio signal
     :param sr: sampling rate
-
     :return: spectrogram of the data
     """
     from numpy.fft import rfft
@@ -86,10 +78,9 @@ def get_spectrogram(samples, sr, max_freq=None):
     win = hamming(2*w)
     time_line = [t for t in range(w, len(samples)-w, w)]
     freq_line = linspace(1, sr/2, 1024)
-    freq_line = freq_line[:imax]
+    freq_line = freq_line[:int(imax)]
     frames = [win*samples[t-w:t+w] for t in time_line]
-    return map(list, zip(*map(lambda x: map(abs, rfft(x, 2048)[:imax]), frames))),\
-           [float(time_line[0])/sr, float(time_line[-1])/sr, freq_line[0], freq_line[-1]]
+    return list(map(list, zip(*map(lambda x: map(abs, rfft(x, 2048)[:int(imax)]), frames)))), [float(time_line[0])/sr, float(time_line[-1])/sr, freq_line[0], freq_line[-1]]
 
 
 
@@ -99,16 +90,13 @@ def get_spectrogram(samples, sr, max_freq=None):
 def mean_spectro(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_freq=None, n_bins=1024, windowing_function='hamming'):
     """
     This function output the mean of the spectrogram (as computed in the "get_trackings" function)
-
     :param samples: samples of the audio signal
     :param sr: sampling rate
     :param w_length: window length for the fft (in seconds)
     :param w_step: hop size for the fft (in seconds)
     :param n_bins: size of the fft (in bins)
     :param windowing_function: type of window used for the windowing in the fft
-
     :return: mean value of each frequency row of the spectrogram (in dB)
-
     """
 
     from numpy import fft
@@ -117,7 +105,7 @@ def mean_spectro(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_f
     demi = int(w_length*sr)
 
     time_line_samples = range(demi, len(samples), int(w_step*sr))
-    time_line = map(lambda x: float(x)/sr, time_line_samples)
+    time_line = list(map(lambda x: float(x)/sr, time_line_samples))
     frames = [samples[t-demi:t+demi] for t in time_line_samples]
     low_freq_id = max([low_freq/(sr/2)*n_bins, 1])
     if high_freq is None:
@@ -133,7 +121,7 @@ def mean_spectro(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_f
             W = signal.get_window(windowing_function, len(current_frame), fftbins=False)
             current_frame = current_frame * W
 
-        spectrum = map(abs, fft.rfft(current_frame, n=2*n_bins)[low_freq_id:high_freq_id])
+        spectrum = list(map(abs, fft.rfft(current_frame, n=2*n_bins)[low_freq_id:high_freq_id]))
         spectrogram += [spectrum]
 
 
@@ -218,16 +206,13 @@ class Tracking(object):
 def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_freq=None, n_bins=2048, n_peaks=5,
                   min_len=5, windowing_function='hamming', tani_cp = 3.0, tani_cf=100.0, threshold_dB=-25):
     """
-
     get_tracking creates Nodes and Tracks form an audio file.
-
     :param samples: samples of the audio signal
     :param sr: sampling rate
     :param w_length: window length for the fft (in seconds)
     :param w_step: hop size for the fft (in seconds)
     :param n_bins: size of the fft (in bins)
     :param windowing_function: type of window used for the windowing in the fft
-
     :param low_freq: minimum frequency to consider in the tracking (in Hertz)
     :param high_freq: maximum frequency to consider in the tracking (in Hertz)
     :param n_peaks: maximum number of peaks by frame
@@ -235,8 +220,6 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
     :param tani_cp: Amplitude distance between two peaks (in dB)
     :param tani_cf: Frequency distance between two peaks (in cents)
     :param threshold_dB: Amplitude threshold to consider peaks (in dB)
-
-
     :return: a list of instances of the object Tracking
     """
 
@@ -250,7 +233,7 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
     demi = int(w_length*sr)
     frequency_line = linspace(0, sr/2, n_bins)
     time_line_samples = range(demi, len(samples), int(w_step*sr))
-    time_line = map(lambda x: float(x)/sr, time_line_samples)
+    time_line = list(map(lambda x: float(x)/sr, time_line_samples))
     frames = [samples[t-demi:t+demi] for t in time_line_samples]
     low_freq_id = max([low_freq/(sr/2)*n_bins, 1])
     if high_freq is None:
@@ -266,14 +249,15 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
             W = signal.get_window(windowing_function, len(current_frame), fftbins=False)
             current_frame = current_frame * W
 
-        spectrum = map(abs, fft.rfft(current_frame, n=2*n_bins)[low_freq_id:high_freq_id])
+        spectrum = list(map(abs, fft.rfft(current_frame, n=2*n_bins)[int(low_freq_id):int(high_freq_id)]))
         spectrum_dB = 20*np.log10(spectrum) # Pat
         spectrogram += [spectrum]
 
         # Find greatest peaks
-        peaks = sorted([Node(frequency_line[low_freq_id+i], spectrum[i], time)
-                        for i in range(1, len(spectrum)-1) if (spectrum[i-1] < spectrum[i] > spectrum[i+1]) & (spectrum_dB[i] > threshold_dB)],
-                       key=lambda x: x.amplitude, reverse=True)[:n_peaks]
+        peaks = sorted([Node(frequency_line[int(low_freq_id+i)], spectrum[int(i)], time)
+                        for i in range(1, len(spectrum)-1)
+                        if (spectrum[int(i-1)] < spectrum[int(i)] > spectrum[int(i+1)])
+                        and (spectrum_dB[int(i)] > threshold_dB)], key=lambda x: x.amplitude, reverse=True)[:n_peaks]
 
         # Add peaks in tracks, or create news tracks
         for a in active_trackings:
@@ -305,9 +289,7 @@ def get_trackings(samples, sr, w_length=0.032, w_step=0.016, low_freq=0.0, high_
 def stats_peak(trackings, time_begin, time_end, frequency_low, frequency_high, nb_f_quadrat = 10, nb_t_quadrat=10):
 
     """
-
     stats_peak output stats about the distribution of the peaks
-
     :param trackings: a list of instances of the object Tracking
     :param time_begin: start time to consider in the analysis (in seconds)
     :param time_end: end time to consider in the analysis (in seconds)
@@ -315,7 +297,6 @@ def stats_peak(trackings, time_begin, time_end, frequency_low, frequency_high, n
     :param frequency_high: maximum frequency to consider in the analysis (in Hertz)
     :param nb_f_quadrat: number of frequency quadrat to consider
     :param nb_t_quadrat: number of time quadrat to consider
-
     :return ratio_quadrat_with_peaks: number of quadrat with peaks /  number of quadrat without peaks
     :return ci: Concentration Index
     :return len(peaks_centered): number of peaks in tracks
@@ -365,14 +346,12 @@ if __name__ == '__main__':
 
 
     # Reading of the audio file
-    print 'Read the audio file:', file_path
+    print('Read the audio file:', file_path)
     sr, sig = wavread(file_path)
-    samples = pcm2float(sig,dtype='float64')
-
+    samples = pcm2float(sig, dtype='float64')
 
 
     # Compute the average value of the spectrogram
-
     low_freq=0.0
     high_freq=10000
     n_bins=2048
@@ -381,12 +360,12 @@ if __name__ == '__main__':
     high_freq_id = int(float(high_freq)/(sr/2)*n_bins)
 
     m = mean_spectro(samples, sr, low_freq=low_freq, high_freq=high_freq, n_bins=n_bins)
-    print 'Mean of the spectrum:', np.mean(m), 'dB'
+    print('Mean of the spectrum:', np.mean(m), 'dB')
     threshold_dB = np.mean(m) + 9
 
 
     # Partial Tracking
-    print '- Partial tracking'
+    print('- Partial tracking')
 
     low_freq=1600.0
     high_freq=8000.0
@@ -404,11 +383,11 @@ if __name__ == '__main__':
         nb_peaks=0
 
 
-    print '- Stats - '
-    print "Number of tracks:", partials_number
-    print 'Number of peaks:', nb_peaks
-    print 'ci:', ci
-    print 'Ratio peaks in quadrats:', ratio_quadrat_with_peaks
+    print('- Stats - ')
+    print("Number of tracks:", partials_number)
+    print('Number of peaks:', nb_peaks)
+    print('ci:', ci)
+    print('Ratio peaks in quadrats:', ratio_quadrat_with_peaks)
 
     # plot spectrogram and tracks -------------------------------------------
     plot_spectro = 1
@@ -426,7 +405,7 @@ if __name__ == '__main__':
     write_pkl = 0
     if write_pkl:
         output_pickle_file='output_pkl/' + path.splitext(path.basename(file_path))[0] +'.pkl'
-        print '- Write tracks in:', output_pickle_file
+        print('- Write tracks in:', output_pickle_file)
         # Create a list of partials
         list_partials=[]
         for t in trackings:
@@ -441,7 +420,7 @@ if __name__ == '__main__':
 
 
     # Remove superposed tracks -------------------------------------
-    print "- Removing superposed tracks:"
+    print("- Removing superposed tracks:")
     w_length=0.032
     w_step=0.016
     time_line_samples = range(int(w_length*sr), len(samples), int(w_step*sr))
@@ -452,16 +431,16 @@ if __name__ == '__main__':
          starts = [t.start for t in trackings]
          stops = [t.stop for t in trackings]
          for start, stop in zip(starts,stops):
-             overlaps[start*sr:stop*sr] += 1
-             if np.all(overlaps[start*sr:stop*sr]>1):
+             overlaps[int(start*sr):int(stop*sr)] += 1
+             if np.all(overlaps[int(start*sr):int(stop*sr)]>1):
                  tracks = [x for x in trackings if x.start == start]
                  trackings.remove(tracks[0])
                  removed_partials +=1
-                 overlaps[start*sr:stop*sr] -= 1
+                 overlaps[int(start*sr):int(stop*sr)] -= 1
 
-    print "Removed tracks:", removed_partials
+    print("Removed tracks:", removed_partials)
     nb_tracks_removed = len(trackings)
-    print "Number of tracks (after removing):", nb_tracks_removed
+    print("Number of tracks (after removing):", nb_tracks_removed)
 
 
     # Output a csv file -------------------------------------
@@ -471,15 +450,15 @@ if __name__ == '__main__':
     output['peaks_number'] = nb_peaks
 
     # Write the csv file
-    print '- Write Indices in:', output_csv_file
+    print('- Write Indices in:', output_csv_file)
     keys = []
     values = []
     writer = csv.writer(open(output_csv_file, 'wb'))
-    for key, value in output.iteritems():
+    for key, value in output.items():
         keys.append(key)
         values.append(value)
 
     writer.writerow(keys)
     writer.writerow(values)
 
-    exit
+exit
