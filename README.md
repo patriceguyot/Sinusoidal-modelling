@@ -1,6 +1,14 @@
-# Sinusoidal-modelling-for-Ecoacoustics
+# Sinusoidal-modelling
 
-This python code intend to illustrate a scientific paper: 
+This python code intend to produce a sine modelling (partial tracking) on spectrograms generated from sounds.
+
+Originally it was designed in an ecoacoustic study, with the corresponding scientific paper below.
+It can also be used also to produce sine modelling on other types of sounds, like speech.
+
+A new branch provide a python 3 version.
+
+## Sinusoidal-modelling for ecoacoustics
+
 
 Guyot, P., Eldridge, A., Eyre-Walker, Y. C., Johnston, A., Pellegrini, T., & Peck, M. *Sinusoidal modelling for ecoacoustics*. In Annual conference Interspeech (INTERSPEECH 2016, pp-2602-2606, [link](https://hal.archives-ouvertes.fr/hal-01474894/document)).
 
@@ -31,6 +39,9 @@ Some python package are required:
  
 ## Usage
 
+Update the values of the variable in the 'main' part of the code. Then run: 
+
+>python main.py
 
 
 ## Licence
